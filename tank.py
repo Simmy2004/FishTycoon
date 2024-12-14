@@ -1,20 +1,34 @@
 import pygame
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, x, y, price, mps):
+    def __init__(self, x, y, price, mps, fpa):
         self.rect = pygame.Rect(x, y, 100, 100)
         self.color = (0, 0, 0)
         self.price = price
         self.mps = mps
         self.is_bought = 0
         self.old_mps = 0
+        self.key_h_pressed = 0
+        self.fish_per_action = fpa
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
         
+    def handle_key_press(self, money):
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_h]:
+            if not self.key_h_pressed:
+                money.balance += self.fish_per_action
+                self.key_h_pressed = True
+        else:
+            self.key_h_pressed = False
+            
     def loop(self, screen, player, money, font):
         self.draw(screen)
         if player.is_nearby(self, 140):
+            
+            self.handle_key_press(money)
             
             if self.is_bought == 1:
                 self.draw_info(screen, font, (0, 0, 0))

@@ -66,17 +66,6 @@ class Player(pygame.sprite.Sprite):
         self.y_pos += y_vel
         
     def loop(self, fps, collisionables, screen, font):
-        
-        # for collisionable in collisionables:
-        #     player_rect = pygame.Rect(self.x_pos, self.y_pos, self.image.get_width(), self.image.get_height())
-        #     collidable_rect = collisionable.rect
-        #     print("aaa")
-        #     if self.is_nearby(collisionable, 200):
-        #         print("auch")
-                
-        #         if isinstance(collisionable, Tank):
-        #             collisionable.draw_buy_prompt(screen, font)
-        
         self.move(self.x_vel, self.y_vel, collisionables)
 
     def draw(self, screen):
@@ -130,7 +119,7 @@ def main():
     money = Money()
     font = pygame.font.Font(None, 20) 
     
-    tank = Tank(700, 300, 2, 100)
+    tank = Tank(700, 300, 5, 100, 2)
     collisionables = [tank]
 
     while running:
