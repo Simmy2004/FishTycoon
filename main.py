@@ -2,6 +2,8 @@ import pygame
 from os.path import join, isfile
 from os import listdir
 from money import Money
+from tank import Tank
+from math import sqrt
 
 from pygame.sprite import Group
 
@@ -22,12 +24,60 @@ class Player(pygame.sprite.Sprite):
         self.y_pos = y
         self.image = pygame.image.load(join("Art", image_name))
 
-    def move(self, x_vel, y_vel):
+    def check_collision(self, collsionable):
+        player_rect = pygame.Rect(self.x_pos, self.y_pos, self.image.get_width(), self.image.get_height())
+        return collsionable.rect.colliderect(player_rect)
+    
+    
+    def is_nearby(self, collisionable, threshold):
+        
+        player_center = pygame.Rect(self.x_pos, self.y_pos, self.image.get_width(), self.image.get_height()).center
+        collidable_center = collisionable.rect.center
+        distance = sqrt((player_center[0] - collidable_center[0]) ** 2 + (player_center[1] - collidable_center[1]) ** 2)
+        return distance < threshold
+
+    def move(self, x_vel, y_vel, collisionables):
+        
+        player_rect = pygame.Rect(self.x_pos, self.y_pos, self.image.get_width(), self.image.get_height())
+        if x_vel != 0:
+
+            future_rect = player_rect.move(x_vel, 0)
+            for collisionable in collisionables:
+                collidable_rect = collisionable.rect 
+                if future_rect.colliderect(collidable_rect):
+                    if x_vel > 0:
+                        self.x_pos = collidable_rect.left - player_rect.width
+                    elif x_vel < 0:
+                        self.x_pos = collidable_rect.right
+                    x_vel = 0
+
+        if y_vel != 0:
+            future_rect = player_rect.move(0, y_vel) 
+            for collisionable in collisionables:
+                collidable_rect = collisionable.rect
+
+                if future_rect.colliderect(collidable_rect):
+                    if y_vel > 0:
+                        self.y_pos = collidable_rect.top - player_rect.height
+                    elif y_vel < 0:
+                        self.y_pos = collidable_rect.bottom
+                    y_vel = 0
         self.x_pos += x_vel
         self.y_pos += y_vel
-
-    def loop(self, fps):
-        self.move(self.x_vel, self.y_vel)
+        
+    def loop(self, fps, collisionables, screen, font):
+        
+        # for collisionable in collisionables:
+        #     player_rect = pygame.Rect(self.x_pos, self.y_pos, self.image.get_width(), self.image.get_height())
+        #     collidable_rect = collisionable.rect
+        #     print("aaa")
+        #     if self.is_nearby(collisionable, 200):
+        #         print("auch")
+                
+        #         if isinstance(collisionable, Tank):
+        #             collisionable.draw_buy_prompt(screen, font)
+        
+        self.move(self.x_vel, self.y_vel, collisionables)
 
     def draw(self, screen):
         screen.blit(self.image, (self.x_pos, self.y_pos))
@@ -79,6 +129,9 @@ def main():
     player = Player(300, 300, "main_icon_96x128.png")
     money = Money()
     font = pygame.font.Font(None, 20) 
+    
+    tank = Tank(700, 300, 2, 100)
+    collisionables = [tank]
 
     while running:
         clock.tick(MAX_FPS)
@@ -87,14 +140,15 @@ def main():
                 running = False
                 break
         handle_keyboard_input(player)
-        player.loop(MAX_FPS)
+        player.loop(MAX_FPS, collisionables, screen, font)
 
         for tile in tiles:
             screen.blit(image, tile)
 
         player.draw(screen)
-        money.loop( MAX_FPS)
+        money.loop(MAX_FPS)
         money.render_balance(MAX_FPS, screen, font)
+        tank.loop(screen, player, money, font)
         pygame.display.update()
 
     pygame.quit()

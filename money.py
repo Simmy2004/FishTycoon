@@ -14,7 +14,7 @@ class Money(pygame.sprite.Sprite):
         if self.counter == fps:
             self.counter = 0
             self.balance += self.money_per_second
-        print(self.balance)
+
     def render_balance(self, fps, screen, font):
         box_size = (100, 20)
         transparent_surface = pygame.Surface(box_size, pygame.SRCALPHA)
