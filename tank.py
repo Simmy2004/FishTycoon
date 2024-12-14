@@ -70,10 +70,12 @@ class Tank(pygame.sprite.Sprite):
                 money.increase_money_per_second(self.mps)
                 self.old_mps = self.mps
                 self.mps = 0
+                
+            if self.loading_bar_active:
+                self.show_loading_bar(screen)
+                player.lock = 1
 
-        if self.loading_bar_active:
-            self.show_loading_bar(screen)
-
+       
     def check_collision(self, player):
         player_rect = pygame.Rect(player.x_pos, player.y_pos, player.image.get_width(), player.image.get_height())
         return self.rect.colliderect(player_rect)

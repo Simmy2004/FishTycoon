@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.x_pos = x
         self.y_pos = y
         self.image = pygame.image.load(join("Art", image_name))
+        self.lock = 0
 
     def check_collision(self, collsionable):
         player_rect = pygame.Rect(self.x_pos, self.y_pos, self.image.get_width(), self.image.get_height())
@@ -37,6 +38,9 @@ class Player(pygame.sprite.Sprite):
         return distance < threshold
 
     def move(self, x_vel, y_vel, collisionables):
+        
+        if self.lock:
+            return;
         
         player_rect = pygame.Rect(self.x_pos, self.y_pos, self.image.get_width(), self.image.get_height())
         if x_vel != 0:
