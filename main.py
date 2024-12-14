@@ -1,6 +1,7 @@
 import pygame
 from os.path import join, isfile
 from os import listdir
+from money import Money
 
 from pygame.sprite import Group
 
@@ -11,7 +12,7 @@ WIDTH = 1280
 HEIGHT = 720
 MAX_FPS = 60
 clock = pygame.time.Clock()
-M
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, image_name):
@@ -76,8 +77,8 @@ def main():
     tiles, image = get_background("floor_tile_256x256.png")
     # starting positions and the file
     player = Player(300, 300, "main_icon_96x128.png")
-
-   
+    money = Money()
+    font = pygame.font.Font(None, 20) 
 
     while running:
         clock.tick(MAX_FPS)
@@ -92,6 +93,8 @@ def main():
             screen.blit(image, tile)
 
         player.draw(screen)
+        money.loop( MAX_FPS)
+        money.render_balance(MAX_FPS, screen, font)
         pygame.display.update()
 
     pygame.quit()
