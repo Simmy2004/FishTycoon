@@ -58,32 +58,44 @@ class Tank(pygame.sprite.Sprite):
     def draw_buy_prompt(self, screen, font, color):
         if self.is_bought == 0:
 
-            prompt_text_1 = f"This tank provides {self.mps} fish per second"
-            prompt_text_2 = f"Price: {self.price}"
-            prompt_text_3 = f"(Press E key)"
+            prompt_text_1 = f"This tank provides {self.mps} fish per second with fisherman"
+            prompt_text_2 = f"This tank provides {self.fish_per_action} fish per action"
+            prompt_text_3 = f"Price: {self.price}"
+            prompt_text_4 = f"(Press E key to buy fisherman)"
+            prompt_text_5 = f"(Press H key to fish manually)"
 
             text_surface_1 = font.render(prompt_text_1, True, (255, 255, 255))
             text_surface_2 = font.render(prompt_text_2, True, (255, 255, 255))
             text_surface_3 = font.render(prompt_text_3, True, (255, 255, 255))
+            text_surface_4 = font.render(prompt_text_4, True, (255, 255, 255))
+            text_surface_5 = font.render(prompt_text_5, True, (255, 255, 255))
 
-            max_width = max(text_surface_1.get_width(), text_surface_2.get_width(), text_surface_3.get_width())
-            total_height = text_surface_1.get_height() + text_surface_2.get_height() + text_surface_3.get_height() + 20 
+            max_width = max(text_surface_1.get_width(), text_surface_2.get_width(), text_surface_3.get_width(), text_surface_4.get_width(), text_surface_5.get_width())
+            total_height = text_surface_1.get_height() + text_surface_2.get_height() + text_surface_3.get_height() + text_surface_4.get_height() + text_surface_5.get_height() + 20
             prompt_rect = pygame.Rect(self.rect.x, self.rect.y - total_height, max_width + 20, total_height)
 
-            pygame.draw.rect(screen, color, prompt_rect)
+
+            box_surface = pygame.Surface((prompt_rect.width, prompt_rect.height), pygame.SRCALPHA)
+            box_surface.fill((color[0], color[1], color[2], 100))
+
+            screen.blit(box_surface, prompt_rect.topleft)
 
             text_rect_1 = text_surface_1.get_rect(center=(prompt_rect.centerx, prompt_rect.top + 10))
             text_rect_2 = text_surface_2.get_rect(center=(prompt_rect.centerx, text_rect_1.bottom + 10))
             text_rect_3 = text_surface_3.get_rect(center=(prompt_rect.centerx, text_rect_2.bottom + 10))
+            text_rect_4 = text_surface_4.get_rect(center=(prompt_rect.centerx, text_rect_3.bottom + 10))
+            text_rect_5 = text_surface_5.get_rect(center=(prompt_rect.centerx, text_rect_4.bottom + 10))
 
             screen.blit(text_surface_1, text_rect_1)
             screen.blit(text_surface_2, text_rect_2)
             screen.blit(text_surface_3, text_rect_3)
+            screen.blit(text_surface_4, text_rect_4)
+        screen.blit(text_surface_5, text_rect_5)
             
     def draw_info(self, screen, font, color):
 
         info_text = f"This tank provides {self.old_mps} fish per second"
-        text_surface = font.render(info_text, True, (255, 255, 255))
+        text_surface = font.render(info_text, True, (255, 255, 255, 100))
         box_width = text_surface.get_width() + 20
         box_height = text_surface.get_height() + 20
 
