@@ -1,16 +1,20 @@
 import pygame
 import time  # To use time for managing delays
 
+DISTANCE_THRESHOLD = 120
+TANK_WIDTH = 64
+TANK_HEIGHT = 64
+
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, x, y, price, mps, fpa):
-        self.rect = pygame.Rect(x, y, 100, 100)
+    def __init__(self, x, y, price, money_per_second, fish_per_second):
+        self.rect = pygame.Rect(x, y, 64, 64)
         self.color = (0, 0, 0)
         self.price = price
-        self.mps = mps
+        self.mps = money_per_second
         self.is_bought = 0
         self.old_mps = 0
         self.key_h_pressed = False
-        self.fish_per_action = fpa
+        self.fish_per_action = fish_per_second
         self.last_key_press_time = 0
         self.cooldown_time = 3
         self.loading_bar_active = False
@@ -24,13 +28,12 @@ class Tank(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_h]:
             if not self.key_h_pressed or current_time - self.last_key_press_time > self.cooldown_time:
-                money.balance += self.fish_per_action
                 self.key_h_pressed = True
                 self.last_key_press_time = current_time
                 self.loading_bar_active = True
                 self.loading_start_time = current_time
 
-    def show_loading_bar(self, screen):
+    def show_loading_bar(self, screen, money):
         elapsed_time = time.time() - self.loading_start_time
         loading_bar_width = 200
         loading_bar_height = 20
@@ -44,10 +47,11 @@ class Tank(pygame.sprite.Sprite):
 
         if elapsed_time >= self.cooldown_time:
             self.loading_bar_active = False
+            money.balance += self.fish_per_action
 
     def loop(self, screen, player, money, font):
         self.draw(screen)
-        if player.is_nearby(self, 140):
+        if player.is_nearby(self, DISTANCE_THRESHOLD):
             self.handle_key_press(money, screen, font)
             
             if self.is_bought == 1:
@@ -72,8 +76,10 @@ class Tank(pygame.sprite.Sprite):
                 self.mps = 0
                 
             if self.loading_bar_active:
-                self.show_loading_bar(screen)
-                player.lock = 1
+                self.show_loading_bar(screen, money)
+                player.lock = True
+            else:
+                player.lock = False
 
        
     def check_collision(self, player):
