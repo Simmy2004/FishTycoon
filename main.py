@@ -2,6 +2,7 @@ import pygame
 from os.path import join, isfile
 from os import listdir
 from block import BLOCK_WIDTH, BLOCK_HEIGHT, Block
+from door import Door
 from money import Money
 from tank_idle import TANK_WIDTH, TANK_HEIGHT, TankIdle
 from tank_fishing import TankFishing
@@ -116,17 +117,17 @@ def handle_keyboard_input(player):
 
     if keys[pygame.K_DOWN]:
         player.y_vel = VELOCITY
-        if player.y_pos >= HEIGHT - 64:
+        if player.y_pos >= HEIGHT - 128 - 16:
             player.y_vel = 0
 
     if keys[pygame.K_RIGHT]:
         player.x_vel = VELOCITY
-        if player.x_pos >= WIDTH - 64:
+        if player.x_pos >= WIDTH - 96 - 16:
             player.x_vel = 0
 
     if keys[pygame.K_LEFT]:
         player.x_vel = -VELOCITY   
-        if player.x_pos == 0:
+        if player.x_pos <= 16:
             player.x_vel = 0
 
 def render_back_wall():
@@ -177,6 +178,8 @@ def main():
     player = Player(300, 300, "main_icon_96x128.png")
     money = Money()
     font = pygame.font.Font(None, 20) 
+    door = Door(WIDTH // 2, 28)
+    room_cover = pygame.image.load(join("Art", "Tiles", "BlueWall", "roomCover.png"))
     
     collisionables, walkables = render_collisionables()
 
@@ -191,11 +194,15 @@ def main():
         for tile in tiles:
             screen.blit(image, tile)
 
+        screen.blit(room_cover, (0, 0))
+
         for walkable in walkables:
             walkable.loop(screen, player, money, font)
         for collisionable in collisionables:
             collisionable.loop(screen, player, money, font)
-            
+        
+        door.draw(screen)
+
         money.loop(MAX_FPS)
         money.render_balance(MAX_FPS, screen, font)
             

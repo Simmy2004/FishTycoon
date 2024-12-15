@@ -7,11 +7,11 @@ BLOCK_HEIGHT = 64
 
 class Block(pygame.sprite.Sprite):
     def __init__ (self, x, y, image_name):
-        image = Image.open(join("Art", image_name))
-        image_resized = image.resize((64, 64), Image.LANCZOS)
-        self.image = pygame.image.fromstring(image_resized.tobytes(), image_resized.size, image_resized.mode)
+        # image = Image.open(join("Art", image_name))
+        # image_resized = image.resize((64, 64), Image.LANCZOS)
+        # self.image = pygame.image.fromstring(image_resized.tobytes(), image_resized.size, image_resized.mode)
 
-       # self.image = pygame.image.load(join("Art", image_name))
+        self.image = pygame.image.load(join("Art", image_name))
         self.x_pos = x
         self.y_pos = y
         self.rect = pygame.Rect(x, y, BLOCK_WIDTH, BLOCK_HEIGHT)
