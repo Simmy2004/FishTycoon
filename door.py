@@ -37,10 +37,14 @@ class Door:
             keys = pygame.key.get_pressed()
 
             if keys[pygame.K_e] and self.final_door and money.balance >= self.price:
-                
-                print()
+                player.level = player.level + 1
+                money.balance = money.balance - self.price
+                print(player.level)
             elif keys[pygame.K_e] and money.balance >= self.price:
                 self.fade = True
+                player.level = player.level + 1
+                money.balance = money.balance - self.price
+                print(player.level)
           
 
 

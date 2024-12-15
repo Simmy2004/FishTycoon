@@ -6,6 +6,7 @@ from door import Door
 from money import Money
 from tank_idle import TANK_WIDTH, TANK_HEIGHT, TankIdle
 from tank_fishing import TankFishing
+from rod_upgrade import RodUpgrade
 from math import sqrt
 from PIL import Image
 
@@ -21,6 +22,8 @@ HEIGHT = 720
 MAX_FPS = 60
 clock = pygame.time.Clock()
 
+BASE_FISHING_RATE = [1, 2, 5]
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, image_name):
@@ -30,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.y_pos = y
         self.image = pygame.image.load(join("Art", image_name))
         self.lock = False
+        self.level = 0
 
     # Generates a rectangle by the player dimensions. Return if there is any collision
     def check_collision(self, collsionable):
@@ -158,7 +162,7 @@ def render_back_wall():
     
 
 # Here i will define every object that can collide with the player.
-def render_collisionables():
+def render_collisionables(player):
     upper_wall, down_wall = render_back_wall()
     collisionables = []
     walkables = []
@@ -167,14 +171,18 @@ def render_collisionables():
         collisionables.append(wall_tile)
     for wall_tile in down_wall:
         walkables.append(wall_tile)
+        
+    manual_fishing_tank = TankFishing(0, 5 * TANK_HEIGHT, BASE_FISHING_RATE[player.level])
 
-    collisionables.append(TankFishing(0, 5 * TANK_HEIGHT, 5000))
+    collisionables.append(manual_fishing_tank)
 
     collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 3 * TANK_HEIGHT, 5, 100)) 
     collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 6 * TANK_HEIGHT, 5, 100))
     collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 9 * TANK_HEIGHT, 5, 100))
     
-    return collisionables, walkables
+    collisionables.append(RodUpgrade(0, 9 * TANK_HEIGHT, manual_fishing_tank))
+    
+    return manual_fishing_tank, collisionables, walkables
 
 
 
@@ -228,7 +236,8 @@ def main():
     door = Door(WIDTH // 2, 28, 1000, False)
     room_cover = pygame.image.load(join("Art", "Tiles", "BlueWall", "roomCover.png"))
     
-    collisionables, walkables = render_collisionables()
+    manual_fishing_tank, collisionables, walkables = render_collisionables(player)
+
 
     while running:
         clock.tick(MAX_FPS)
@@ -259,6 +268,7 @@ def main():
         if (door.fade):
             fade_screen_between_levels(screen)
             door.fade = False
+            manual_fishing_tank, collisionables, walkables = render_collisionables(player)
             
        
         pygame.display.update()
