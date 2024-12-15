@@ -7,7 +7,7 @@ TANK_HEIGHT = 64
 
 class TankFishing(pygame.sprite.Sprite):
     def __init__(self, x, y, fish_per_second):
-        self.rect = pygame.Rect(x, y, 64, 64)
+        self.rect = pygame.Rect(x, y, 64, 196)
         self.color = (0, 0, 0)
         self.key_h_pressed = False
         self.fish_per_action = fish_per_second

@@ -90,6 +90,8 @@ class Player(pygame.sprite.Sprite):
 
         return x_vel, y_vel
 
+
+
 # Loads the image and creates the background tile by tile, returning the grid, and the image used
 def get_background(img_name):
     image = pygame.image.load(join("Art", img_name))
@@ -103,6 +105,8 @@ def get_background(img_name):
             tiles.append(position)
     
     return tiles, image
+
+
 
 # Checks for any input in the keyboard for movement.
 def handle_keyboard_input(player):
@@ -129,6 +133,8 @@ def handle_keyboard_input(player):
         player.x_vel = -VELOCITY   
         if player.x_pos <= 16:
             player.x_vel = 0
+
+
 
 def render_back_wall():
     upper_tiles = []
@@ -162,13 +168,54 @@ def render_collisionables():
     for wall_tile in down_wall:
         walkables.append(wall_tile)
 
-   
-    collisionables.append(TankFishing(WIDTH - TANK_WIDTH, TANK_HEIGHT + 50, 2)) 
-    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 5 * TANK_HEIGHT, 5, 100))
-    # collisionables.append(Tank(WIDTH - 2 * TANK_WIDTH, 9 * TANK_HEIGHT, 5, 100, 2))
-    
+    collisionables.append(TankFishing(0, 5 * TANK_HEIGHT, 5000))
 
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 3 * TANK_HEIGHT, 5, 100)) 
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 6 * TANK_HEIGHT, 5, 100))
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 9 * TANK_HEIGHT, 5, 100))
+    
     return collisionables, walkables
+
+
+
+def fade_screen_between_levels(screen, duration = 3000):
+    fade_surface = pygame.Surface((WIDTH, HEIGHT))
+    fade_surface.fill((0, 0, 0))
+
+    # Calculating every step for fading in and out
+    fade_in_duration = fade_out_duration = duration // 2
+    fade_in_steps = 255 / (fade_in_duration / (1000 / MAX_FPS))
+    fade_out_steps = 255 / (fade_out_duration / (1000 / MAX_FPS))
+
+    alpha = 0
+    fade_in = True
+
+    running = True
+    while running:
+        clock.tick(MAX_FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        # Sets up the black surface which will be transparent at first
+        fade_surface.set_alpha(alpha)
+        screen.blit(fade_surface, (0, 0))
+        pygame.display.flip()
+
+        # Controls the alpha of the surface by the fade direction
+        if fade_in:
+            alpha += fade_in_steps
+            if alpha >= 255:
+                fade_in = False
+                alpha = 255
+        else:
+            alpha -= fade_out_steps
+            if alpha <= 0:
+                alpha = 0
+                running = False
+        pygame.display.update()
+
+
 
 def main():
     running = True
@@ -178,7 +225,7 @@ def main():
     player = Player(300, 300, "main_icon_96x128.png")
     money = Money()
     font = pygame.font.Font(None, 20) 
-    door = Door(WIDTH // 2, 28)
+    door = Door(WIDTH // 2, 28, 1000, False)
     room_cover = pygame.image.load(join("Art", "Tiles", "BlueWall", "roomCover.png"))
     
     collisionables, walkables = render_collisionables()
@@ -201,13 +248,18 @@ def main():
         for collisionable in collisionables:
             collisionable.loop(screen, player, money, font)
         
-        door.draw(screen)
+        door.loop(screen, player, money, font)
 
         money.loop(MAX_FPS)
         money.render_balance(MAX_FPS, screen, font)
             
         player.loop(MAX_FPS, collisionables, screen, font)
         player.draw(screen)
+
+        if (door.fade):
+            fade_screen_between_levels(screen)
+            door.fade = False
+            
        
         pygame.display.update()
 
