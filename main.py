@@ -3,7 +3,8 @@ from os.path import join, isfile
 from os import listdir
 from block import BLOCK_WIDTH, BLOCK_HEIGHT, Block
 from money import Money
-from tank import TANK_WIDTH, TANK_HEIGHT, Tank
+from tank_idle import TANK_WIDTH, TANK_HEIGHT, TankIdle
+from tank_fishing import TankFishing
 from math import sqrt
 from PIL import Image
 
@@ -161,9 +162,9 @@ def render_collisionables():
         walkables.append(wall_tile)
 
    
-    collisionables.append(Tank(WIDTH - 2 * TANK_WIDTH, TANK_HEIGHT, 5, 100, 2)) 
-    collisionables.append(Tank(WIDTH - 2 * TANK_WIDTH, 5 * TANK_HEIGHT, 5, 100, 2))
-    collisionables.append(Tank(WIDTH - 2 * TANK_WIDTH, 9 * TANK_HEIGHT, 5, 100, 2))
+    collisionables.append(TankFishing(WIDTH - TANK_WIDTH, TANK_HEIGHT + 50, 2)) 
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 5 * TANK_HEIGHT, 5, 100))
+    # collisionables.append(Tank(WIDTH - 2 * TANK_WIDTH, 9 * TANK_HEIGHT, 5, 100, 2))
     
 
     return collisionables, walkables
@@ -190,14 +191,13 @@ def main():
         for tile in tiles:
             screen.blit(image, tile)
 
-      
-        money.loop(MAX_FPS)
-        money.render_balance(MAX_FPS, screen, font)
-
         for walkable in walkables:
             walkable.loop(screen, player, money, font)
         for collisionable in collisionables:
             collisionable.loop(screen, player, money, font)
+            
+        money.loop(MAX_FPS)
+        money.render_balance(MAX_FPS, screen, font)
             
         player.loop(MAX_FPS, collisionables, screen, font)
         player.draw(screen)
