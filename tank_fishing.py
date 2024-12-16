@@ -1,5 +1,6 @@
 import pygame
-import time 
+import time
+from os.path import join, isfile
 
 DISTANCE_THRESHOLD = 120
 TANK_WIDTH = 64
@@ -50,6 +51,9 @@ class TankFishing(pygame.sprite.Sprite):
         if elapsed_time >= self.cooldown_time:
             self.loading_bar_active = False
             money.balance += self.fish_per_action
+            fishing_sound = pygame.mixer.Sound(join("sfx", "fishing.mp3"))
+            fishing_sound.set_volume(0.5)
+            fishing_sound.play()
 
     def loop(self, screen, player, money, font):
         self.draw(screen)

@@ -15,6 +15,7 @@ from pygame.sprite import Group
 from walkable import Walkable
 
 pygame.init()
+pygame.mixer.init()
 
 VELOCITY = 6
 WIDTH = 1280
@@ -140,32 +141,47 @@ def handle_keyboard_input(player):
 
 
 
-def render_back_wall():
+def render_back_wall(wall_color):
     upper_tiles = []
     down_tiles = []
     for i in range(WIDTH // TANK_WIDTH + 1):
         if i == 0:
-            upper_tiles.append(Block(i * TANK_WIDTH, 0, join("Tiles", "BlueWall", "tile1.png")))
-            down_tiles.append(Walkable(i * TANK_WIDTH, TANK_HEIGHT, join("Tiles", "BlueWall", "tile9.png")))
+            upper_tiles.append(Block(i * TANK_WIDTH, 0, join("Tiles", wall_color, "tile1.png")))
+            down_tiles.append(Walkable(i * TANK_WIDTH, TANK_HEIGHT, join("Tiles", wall_color, "tile9.png")))
         elif i == WIDTH // TANK_WIDTH - 1:
-            upper_tiles.append(Block(i * TANK_WIDTH, 0, join("Tiles", "BlueWall", "tile4.png")))
-            down_tiles.append(Walkable(i * TANK_WIDTH, TANK_HEIGHT, join("Tiles", "BlueWall", "tile12.png")))
+            upper_tiles.append(Block(i * TANK_WIDTH, 0, join("Tiles", wall_color, "tile4.png")))
+            down_tiles.append(Walkable(i * TANK_WIDTH, TANK_HEIGHT, join("Tiles", wall_color, "tile12.png")))
         else:
             upper_tile_number = "tile2.png" if (i % 2) == 1 else "tile3.png"
             down_tile_number = "tile10.png" if (i % 2) == 1 else "tile11.png"
     
-            upper_tiles.append(Block(i * TANK_WIDTH, 0, join("Tiles", "BlueWall", upper_tile_number)))
-            down_tiles.append(Walkable(i * TANK_WIDTH, TANK_HEIGHT, join("Tiles", "BlueWall", down_tile_number)))
+            upper_tiles.append(Block(i * TANK_WIDTH, 0, join("Tiles", wall_color, upper_tile_number)))
+            down_tiles.append(Walkable(i * TANK_WIDTH, TANK_HEIGHT, join("Tiles", wall_color, down_tile_number)))
 
     return upper_tiles, down_tiles
 
     
 
 # Here i will define every object that can collide with the player.
-def render_collisionables(player):
-    upper_wall, down_wall = render_back_wall()
+def render_collisionables(player, wall_color):
+    upper_wall, down_wall = render_back_wall(wall_color)
     collisionables = []
     walkables = []
+
+    idle_values = [[10, 30, 60], [125, 250, 400], [1000, 1500, 2500]]
+    idle_prices = [[50, 350, 1000], [2000, 4000, 10000], [25000, 50000, 75000]]
+
+
+    # Checks the level based on the color of the walls
+    if (wall_color == "BlueWall"):
+        current_values = idle_values[0]
+        current_prices = idle_prices[0]
+    elif (wall_color == "RedWall"):
+        current_values = idle_values[1]
+        current_prices = idle_prices[1]
+    else:
+        current_values = idle_values[2]
+        current_prices = idle_prices[2]
 
     for wall_tile in upper_wall:
         collisionables.append(wall_tile)
@@ -176,9 +192,9 @@ def render_collisionables(player):
 
     collisionables.append(manual_fishing_tank)
 
-    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 3 * TANK_HEIGHT, 5, 100)) 
-    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 6 * TANK_HEIGHT, 5, 100))
-    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 9 * TANK_HEIGHT, 5, 100))
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 3 * TANK_HEIGHT, current_prices[0], current_values[0])) 
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 6 * TANK_HEIGHT, current_prices[1], current_values[1]))
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 9 * TANK_HEIGHT, current_prices[2], current_values[2]))
     
     collisionables.append(RodUpgrade(0, 9 * TANK_HEIGHT, manual_fishing_tank))
     
@@ -224,7 +240,6 @@ def fade_screen_between_levels(screen, duration = 3000):
         pygame.display.update()
 
 
-
 def main():
     running = True
     screen = pygame.display.set_mode((1280, 720))
@@ -233,10 +248,11 @@ def main():
     player = Player(300, 300, "main_icon_96x128.png")
     money = Money()
     font = pygame.font.Font(None, 20) 
-    door = Door(WIDTH // 2, 28, 1000, False)
+    door = Door(WIDTH // 2, 28, 5000, False)
+
     room_cover = pygame.image.load(join("Art", "Tiles", "BlueWall", "roomCover.png"))
     
-    manual_fishing_tank, collisionables, walkables = render_collisionables(player)
+    manual_fishing_tank, collisionables, walkables = render_collisionables(player, "BlueWall")
 
 
     while running:
@@ -266,13 +282,33 @@ def main():
         player.draw(screen)
 
         if (door.fade):
+            fly_sound = pygame.mixer.Sound(join("sfx", "next_level_sound.mp3"))
+            fly_sound.set_volume(0.5)
+            fly_sound.play()
+
             fade_screen_between_levels(screen)
             door.fade = False
-            manual_fishing_tank, collisionables, walkables = render_collisionables(player)
+            door.level += 1
+            if (door.level == 2):
+                wall_color = "RedWall"
+                room_cover = pygame.image.load(join("Art", "Tiles", "RedWall", "roomCover.png"))
+                door.price += 25000
+                tiles, image = get_background("floor_tile_256x256_level2.png")
+            
+            if (door.level == 3):
+                wall_color = "YellowWall"
+                room_cover = pygame.image.load(join("Art", "Tiles", "YellowWall", "roomCover.png"))
+                door.price += 170000
+                door.image = pygame.image.load(join("Art", "Tiles", "doorLevel3.png"))
+                tiles, image = get_background("floor_tile_256x256_level3.png")
+            
+            manual_fishing_tank, collisionables, walkables = render_collisionables(player, wall_color)
+           
+
             
        
         pygame.display.update()
-
+    pygame.mixer.quit()
     pygame.quit()
 
 

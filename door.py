@@ -14,6 +14,7 @@ class Door:
         self.price = price
         self.final_door = final_door
         self.fade = False
+        self.level = 1
     
     def draw(self, screen):
         screen.blit(self.image, (self.x_pos, self.y_pos))
@@ -51,7 +52,7 @@ class Door:
     def draw_buy_prompt(self, screen, font, color):
       
         prompt_text_1 = f"This Door lets you travel to the next location"
-        prompt_text_2 = f"Next location is: Torino - Price 1.000$"
+        prompt_text_2 = f"Next location is: Torino - Price {self.price}$"
         prompt_text_3 = f"(Press E to travel to Torino)"
 
 

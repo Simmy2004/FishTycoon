@@ -1,5 +1,6 @@
 import pygame
 import time
+from os.path import join, isfile
 
 DISTANCE_THRESHOLD = 120
 TANK_WIDTH = 64
@@ -15,9 +16,14 @@ class TankIdle(pygame.sprite.Sprite):
         self.is_bought = 0
         self.old_mps = 0
         self.last_flash_time = 0
+        self.image = pygame.image.load(join("Art", "tanks", "idle_tank_lv1.png"))
+
+        self.key_cooldown = 0.5
+        self.last_keypress_time = 0
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        #pygame.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.image, self.rect)
 
     def loop(self, screen, player, money, font):
         self.draw(screen)
@@ -39,9 +45,16 @@ class TankIdle(pygame.sprite.Sprite):
             self.draw_buy_prompt(screen, font, color)
 
             keys = pygame.key.get_pressed()
+            current_time = time.time()
 
-            if keys[pygame.K_e]:
+            if keys[pygame.K_e] and current_time - self.last_keypress_time > self.key_cooldown:
+                self.last_keypress_time = current_time
+
                 if money.balance >= self.price:
+                    purchase_sound = pygame.mixer.Sound(join("sfx", "confirmed_purchase.mp3"))
+                    purchase_sound.set_volume(0.5)
+                    purchase_sound.play()
+                    
                     self.is_bought = 1
                     money.balance -= self.price
                     print(self.mps)
@@ -49,6 +62,9 @@ class TankIdle(pygame.sprite.Sprite):
                     self.old_mps = self.mps
                     self.mps = 0
                 else:
+                    not_money_sound = pygame.mixer.Sound(join("sfx", "not_enough_money_2.mp3"))
+                    not_money_sound.set_volume(0.5)
+                    not_money_sound.play()
                     self.flash_text = True
                     self.flash_text_start_time = time.time()
                     self.flash_text_color = (255, 0, 0)

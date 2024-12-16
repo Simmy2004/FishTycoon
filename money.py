@@ -17,15 +17,24 @@ class Money(pygame.sprite.Sprite):
 
     def render_balance(self, fps, screen, font):
         box_size = (100, 20)
+        mps_box_size = (100, 20)
         transparent_surface = pygame.Surface(box_size, pygame.SRCALPHA)
+        mps_surface = pygame.Surface(box_size, pygame.SRCALPHA)
         
         box_color = (0, 0, 0, 200)
         transparent_surface.fill(box_color)
+        mps_surface.fill(box_color)
 
         text_color = (255, 255, 255)
         balance_text = font.render(f"${self.balance}", True, text_color)
+        mps_text = font.render(f"MPS: ${self.money_per_second}", True, text_color)
+
         text_rect = balance_text.get_rect(center=(box_size[0] // 2, box_size[1] // 2))
+        mps_rect = mps_text.get_rect(center=(box_size[0] // 2, box_size[1] // 2))
+        
 
         transparent_surface.blit(balance_text, text_rect)
+        mps_surface.blit(mps_text, mps_rect)
 
         screen.blit(transparent_surface, (0, 0))
+        screen.blit(mps_surface, (0, 20))
