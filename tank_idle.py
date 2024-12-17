@@ -5,10 +5,11 @@ from os.path import join, isfile
 DISTANCE_THRESHOLD = 120
 TANK_WIDTH = 64
 TANK_HEIGHT = 64
+ROOM_COVER = 16
 
 class TankIdle(pygame.sprite.Sprite):
-    def __init__(self, x, y, price, money_per_second):
-        self.rect = pygame.Rect(x, y, 64, 64)
+    def __init__(self, x, y, price, money_per_second, level, fisherman):
+        self.rect = pygame.Rect(x - ROOM_COVER, y, 64, 64)
         self.color = (0, 0, 0)
         self.price = price
         self.mps = money_per_second
@@ -16,14 +17,24 @@ class TankIdle(pygame.sprite.Sprite):
         self.is_bought = 0
         self.old_mps = 0
         self.last_flash_time = 0
-        self.image = pygame.image.load(join("Art", "tanks", "idle_tank_lv1.png"))
+        self.fisherman = pygame.image.load(join("Art", "fishermans", fisherman))
 
+        if (level == 1):
+            self.image = pygame.image.load(join("Art", "tanks", "idle_tank_lv1.png"))
+        elif (level == 2):
+            self.image = pygame.image.load(join("Art", "tanks", "idle_tank_lv2.png"))
+        else:
+            self.image = pygame.image.load(join("Art", "tanks", "idle_tank_lv3.png"))
+        
         self.key_cooldown = 0.5
         self.last_keypress_time = 0
 
     def draw(self, screen):
         #pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.image, self.rect)
+        if (self.is_bought):
+            (x, y) = self.rect.topleft
+            screen.blit(self.fisherman, (x - 80, y - 25))
 
     def loop(self, screen, player, money, font):
         self.draw(screen)

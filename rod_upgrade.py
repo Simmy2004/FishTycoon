@@ -5,6 +5,7 @@ from os.path import join, isfile
 DISTANCE_THRESHOLD = 120
 TANK_WIDTH = 64
 TANK_HEIGHT = 64
+ROOM_COVER = 16
 
 BASE_UPGRADE_COST = [[10, 150, 400], [2000, 3000, 5000], [10000, 15000, 20000]]
 BASE_UPGRADE = [[9, 30, 50], [150, 200, 250], [1000, 1500, 2500]]
@@ -12,7 +13,7 @@ MAX_LEVEL = 3
 
 class RodUpgrade(pygame.sprite.Sprite):
     def __init__(self, x, y, tank):
-        self.rect = pygame.Rect(x, y, 64, 64)
+        self.rect = pygame.Rect(x + ROOM_COVER, y, 64, 64)
         self.color = (0, 0, 0)
         self.price = 0
         self.flash_text_start_time = 0
@@ -22,9 +23,11 @@ class RodUpgrade(pygame.sprite.Sprite):
         
         self.last_keypress_time = 0
         self.key_cooldown = 0.5 
+        self.image = pygame.image.load(join("Art", "upgrade_table_2.png"))
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        #pygame.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.image, self.rect)
 
     def loop(self, screen, player, money, font):
         self.draw(screen)

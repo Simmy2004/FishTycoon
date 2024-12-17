@@ -23,7 +23,7 @@ HEIGHT = 720
 MAX_FPS = 60
 clock = pygame.time.Clock()
 
-BASE_FISHING_RATE = [1, 2, 5]
+BASE_FISHING_RATE = [1, 100, 500]
 
 
 class Player(pygame.sprite.Sprite):
@@ -176,12 +176,15 @@ def render_collisionables(player, wall_color):
     if (wall_color == "BlueWall"):
         current_values = idle_values[0]
         current_prices = idle_prices[0]
+        level = 1
     elif (wall_color == "RedWall"):
         current_values = idle_values[1]
         current_prices = idle_prices[1]
+        level = 2
     else:
         current_values = idle_values[2]
         current_prices = idle_prices[2]
+        level = 3
 
     for wall_tile in upper_wall:
         collisionables.append(wall_tile)
@@ -192,9 +195,14 @@ def render_collisionables(player, wall_color):
 
     collisionables.append(manual_fishing_tank)
 
-    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 3 * TANK_HEIGHT, current_prices[0], current_values[0])) 
-    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 6 * TANK_HEIGHT, current_prices[1], current_values[1]))
-    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 9 * TANK_HEIGHT, current_prices[2], current_values[2]))
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 3 * TANK_HEIGHT,
+                                   current_prices[0], current_values[0], level, "IdleFisherman_1.png")) 
+    
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 6 * TANK_HEIGHT,
+                                   current_prices[1], current_values[1], level, "IdleFisherman_2.png"))
+    
+    collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 9 * TANK_HEIGHT,
+                                   current_prices[2], current_values[2], level, "IdleFisherman_3.png"))
     
     collisionables.append(RodUpgrade(0, 9 * TANK_HEIGHT, manual_fishing_tank))
     
@@ -245,7 +253,7 @@ def main():
     screen = pygame.display.set_mode((1280, 720))
     tiles, image = get_background("floor_tile_256x256.png")
     # starting positions and the file
-    player = Player(300, 300, "main_icon_96x128.png")
+    player = Player(300, 300, join("mainIcon", "secondTry.png"))
     money = Money()
     font = pygame.font.Font(None, 20) 
     door = Door(WIDTH // 2, 28, 5000, False)

@@ -5,10 +5,11 @@ from os.path import join, isfile
 DISTANCE_THRESHOLD = 120
 TANK_WIDTH = 64
 TANK_HEIGHT = 64
+ROOM_COVER = 16
 
 class TankFishing(pygame.sprite.Sprite):
     def __init__(self, x, y, fish_per_second):
-        self.rect = pygame.Rect(x, y, 64, 196)
+        self.rect = pygame.Rect(x + ROOM_COVER, y, 64, 196)
         self.color = (0, 0, 0)
         self.key_h_pressed = False
         self.fish_per_action = fish_per_second
@@ -16,9 +17,11 @@ class TankFishing(pygame.sprite.Sprite):
         self.cooldown_time = 3
         self.loading_bar_active = False
         self.loading_start_time = 0
+        self.image = pygame.image.load(join("Art", "tanks", "pond_for_fishing_lv1.png"))
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        #pygame.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.image, self.rect)
 
     def handle_key_press(self):
         current_time = time.time()
