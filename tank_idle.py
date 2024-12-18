@@ -68,7 +68,7 @@ class TankIdle(pygame.sprite.Sprite):
                     
                     self.is_bought = 1
                     money.balance -= self.price
-                    print(self.mps)
+                    # print(self.mps)
                     money.increase_money_per_second(self.mps)
                     self.old_mps = self.mps
                     self.mps = 0
