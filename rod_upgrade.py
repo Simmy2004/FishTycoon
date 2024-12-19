@@ -34,7 +34,8 @@ class RodUpgrade(pygame.sprite.Sprite):
         if player.is_nearby(self, DISTANCE_THRESHOLD):
             color = (0, 255, 0)
 
-            self.price = BASE_UPGRADE_COST[player.level][self.upgrade_level]
+            if player.level < 3 and self.upgrade_level < 3:
+                self.price = BASE_UPGRADE_COST[player.level][self.upgrade_level]
             
             if self.upgrade_level == MAX_LEVEL:
                 self.draw_info(screen, font, (0, 0, 0))
@@ -55,14 +56,14 @@ class RodUpgrade(pygame.sprite.Sprite):
                     money.balance -= self.price
                     # print(self.upgrade_level)
                     purchase_sound = pygame.mixer.Sound(join("sfx", "confirmed_purchase.mp3"))
-                    purchase_sound.set_volume(0.5)
+                    purchase_sound.set_volume(0.2)
                     purchase_sound.play()
                     self.manual_tank.fish_per_action += BASE_UPGRADE[player.level][self.upgrade_level]
                     self.upgrade_level += 1
                     
                 else:
                     not_money_sound = pygame.mixer.Sound(join("sfx", "not_enough_money_2.mp3"))
-                    not_money_sound.set_volume(0.5)
+                    not_money_sound.set_volume(0.2)
                     not_money_sound.play()
                     self.flash_text = True
                     self.flash_text_start_time = current_time

@@ -62,9 +62,6 @@ class TankIdle(pygame.sprite.Sprite):
             sprite_sheet_name = "idle_fisherman2.png"
         else:
             sprite_sheet_name = "idle_fisherman3.png"
-        
-        # if (self.x_vel != 0 or self.y_vel != 0):
-        #     sprite_sheet = "run"
 
         sprites = self.SPRITES[sprite_sheet_name]
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
@@ -73,7 +70,6 @@ class TankIdle(pygame.sprite.Sprite):
         self.animation_count += 1
 
     def draw(self, screen):
-        #pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.image, self.rect)
         if (self.is_bought):
             (x, y) = self.rect.topleft
@@ -107,7 +103,7 @@ class TankIdle(pygame.sprite.Sprite):
 
                 if money.balance >= self.price:
                     purchase_sound = pygame.mixer.Sound(join("sfx", "confirmed_purchase.mp3"))
-                    purchase_sound.set_volume(0.5)
+                    purchase_sound.set_volume(0.2)
                     purchase_sound.play()
                     
                     self.is_bought = 1
@@ -118,7 +114,7 @@ class TankIdle(pygame.sprite.Sprite):
                     self.mps = 0
                 else:
                     not_money_sound = pygame.mixer.Sound(join("sfx", "not_enough_money_2.mp3"))
-                    not_money_sound.set_volume(0.5)
+                    not_money_sound.set_volume(0.2)
                     not_money_sound.play()
                     self.flash_text = True
                     self.flash_text_start_time = time.time()
@@ -221,6 +217,4 @@ class TankIdle(pygame.sprite.Sprite):
         pygame.draw.rect(screen, color, info_box_rect)
         text_rect = text_surface.get_rect(center=info_box_rect.center)
         screen.blit(text_surface, text_rect)
-
-        # print(f"Info Box position: {info_box_rect.x}, {info_box_rect.y}, Box size: {info_box_rect.width}x{info_box_rect.height}")
 

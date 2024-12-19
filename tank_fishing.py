@@ -20,7 +20,6 @@ class TankFishing(pygame.sprite.Sprite):
         self.image = pygame.image.load(join("Art", "tanks", "pond_for_fishing_lv1.png"))
 
     def draw(self, screen):
-        #pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.image, self.rect)
 
     def handle_key_press(self):
@@ -40,7 +39,6 @@ class TankFishing(pygame.sprite.Sprite):
         
         elapsed_time = time.time() - self.loading_start_time
 
-
         loading_bar_x = player.x_pos + (player.image.get_width() - BAR_WIDTH) // 2
         loading_bar_y = player.y_pos - BAR_HEIGHT - 10
 
@@ -49,19 +47,22 @@ class TankFishing(pygame.sprite.Sprite):
         pygame.draw.rect(screen, (50, 50, 50), loading_bar_rect)
 
         progress_width = min(BAR_WIDTH, (elapsed_time / self.cooldown_time) * BAR_WIDTH)
-        pygame.draw.rect(screen, (0, 255, 0), pygame.Rect(loading_bar_x, loading_bar_y, progress_width, BAR_HEIGHT))  # CHANGED: Use BAR_WIDTH and BAR_HEIGHT
+        pygame.draw.rect(screen, (0, 255, 0), pygame.Rect(loading_bar_x, loading_bar_y, progress_width, BAR_HEIGHT))
 
         if elapsed_time >= self.cooldown_time:
             self.loading_bar_active = False
+            self.key_h_pressed = False
             money.balance += self.fish_per_action
             fishing_sound = pygame.mixer.Sound(join("sfx", "fishing.mp3"))
-            fishing_sound.set_volume(0.5)
+            fishing_sound.set_volume(0.2)
             fishing_sound.play()
 
     def loop(self, screen, player, money, font):
         self.draw(screen)
         if player.is_nearby(self, DISTANCE_THRESHOLD):
-            self.handle_key_press()
+            
+            if self.key_h_pressed == False:
+                self.handle_key_press()
             
             color = (0, 255, 0)
                 

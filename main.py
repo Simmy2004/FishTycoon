@@ -23,7 +23,6 @@ WIDTH = 1280
 HEIGHT = 720
 MAX_FPS = 60
 clock = pygame.time.Clock()
-did_win = 0
 
 BASE_FISHING_RATE = [1, 100, 500]
 
@@ -82,9 +81,9 @@ class Player(pygame.sprite.Sprite):
         distance = sqrt((player_center[0] - collidable_center[0]) ** 2 + (player_center[1] - collidable_center[1]) ** 2)
         return distance < threshold
 
-    def update_spritesheet(self):
+    def update_spritesheet(self):    
         sprite_sheet = "idle4"
-        if (self.x_vel != 0 or self.y_vel != 0):
+        if (self.x_vel != 0 or self.y_vel != 0) and self.lock == False:
             sprite_sheet = "run"
         
         sprite_sheet_name = sprite_sheet + "_" + self.direction
@@ -304,6 +303,7 @@ def fade_screen_between_levels(screen, duration = 3000):
 
 def main():
     running = True
+    did_win = 0
     screen = pygame.display.set_mode((1280, 720))
     
     pygame.display.set_caption("Fish Tycoon")
@@ -351,7 +351,7 @@ def main():
 
         if (door.fade):
             fly_sound = pygame.mixer.Sound(join("sfx", "next_level_sound.mp3"))
-            fly_sound.set_volume(0.5)
+            fly_sound.set_volume(0.2)
             fly_sound.play()
 
             fade_screen_between_levels(screen)
