@@ -26,7 +26,37 @@ clock = pygame.time.Clock()
 BASE_FISHING_RATE = [1, 100, 500]
 
 
+def flip(sprites):
+    return [pygame.transform.flip(sprite, True, False) for sprite in sprites]
+
+def load_sprite_sheets(dir, width, height, direction=False):
+    path = join("Art", dir)
+    images = [f for f in listdir(path) if isfile(join(path, f))]
+
+    all_sprites = {}
+
+    for  image in images:
+        sprite_sheet = pygame.image.load(join(path, image))
+
+        sprites = []
+        for i in range(sprite_sheet.get_width() // width):
+            surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+            rect = pygame.Rect(i * width, 0 , width, height)
+            surface.blit(sprite_sheet, (0, 0), rect)
+            sprites.append(surface)
+
+        if direction:
+            all_sprites[image.replace(".png", "") + "_right"] = sprites
+            all_sprites[image.replace(".png", "") + "_left"] = flip(sprites)
+    
+    return all_sprites
+
+
+
 class Player(pygame.sprite.Sprite):
+    SPRITES = load_sprite_sheets("sprites", 100, 180, True)
+    ANIMATION_DELAY = 11
+
     def __init__(self, x, y, image_name):
         self.x_vel = 0
         self.y_vel = 0
@@ -35,6 +65,8 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load(join("Art", image_name))
         self.lock = False
         self.level = 0
+        self.direction = "right"
+        self.animation_count = 0
 
     # Generates a rectangle by the player dimensions. Return if there is any collision
     def check_collision(self, collsionable):
@@ -48,6 +80,20 @@ class Player(pygame.sprite.Sprite):
         distance = sqrt((player_center[0] - collidable_center[0]) ** 2 + (player_center[1] - collidable_center[1]) ** 2)
         return distance < threshold
 
+    def update_spritesheet(self):
+        sprite_sheet = "idle4"
+        if (self.x_vel != 0 or self.y_vel != 0):
+            sprite_sheet = "run"
+        
+        sprite_sheet_name = sprite_sheet + "_" + self.direction
+
+        sprites = self.SPRITES[sprite_sheet_name]
+        sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
+
+        self.sprite = sprites[sprite_index]
+        self.animation_count += 1
+
+
     # Moves the player by the given velocities.
     def move(self, x_vel, y_vel, collisionables):
         # Checks if the player is currently executing something
@@ -59,12 +105,16 @@ class Player(pygame.sprite.Sprite):
 
         self.x_pos += x_vel
         self.y_pos += y_vel
+
         
     def loop(self, fps, collisionables, screen, font):
         self.move(self.x_vel, self.y_vel, collisionables)
+        self.update_spritesheet()
 
     def draw(self, screen):
-        screen.blit(self.image, (self.x_pos, self.y_pos))
+        #self.sprite = self.SPRITES["idle_" + self.direction][0]
+
+        screen.blit(self.sprite, (self.x_pos, self.y_pos))
 
     # Checks for any collisions and modifies velocity to 0 if encountered.
     def handle_collisions(self, collisionables, x_vel, y_vel):
@@ -131,11 +181,13 @@ def handle_keyboard_input(player):
 
     if keys[pygame.K_RIGHT]:
         player.x_vel = VELOCITY
+        player.direction = "right"
         if player.x_pos >= WIDTH - 96 - 16:
             player.x_vel = 0
 
     if keys[pygame.K_LEFT]:
-        player.x_vel = -VELOCITY   
+        player.x_vel = -VELOCITY 
+        player.direction = "left"
         if player.x_pos <= 16:
             player.x_vel = 0
 
@@ -196,13 +248,13 @@ def render_collisionables(player, wall_color):
     collisionables.append(manual_fishing_tank)
 
     collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 3 * TANK_HEIGHT,
-                                   current_prices[0], current_values[0], level, "IdleFisherman_1.png")) 
+                                   current_prices[0], current_values[0], level, 1)) 
     
     collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 6 * TANK_HEIGHT,
-                                   current_prices[1], current_values[1], level, "IdleFisherman_2.png"))
+                                   current_prices[1], current_values[1], level, 2))
     
     collisionables.append(TankIdle(WIDTH - TANK_WIDTH, 9 * TANK_HEIGHT,
-                                   current_prices[2], current_values[2], level, "IdleFisherman_3.png"))
+                                   current_prices[2], current_values[2], level, 3))
     
     collisionables.append(RodUpgrade(0, 9 * TANK_HEIGHT, manual_fishing_tank))
     

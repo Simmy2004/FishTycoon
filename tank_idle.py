@@ -1,13 +1,38 @@
 import pygame
 import time
 from os.path import join, isfile
+from os import listdir
 
 DISTANCE_THRESHOLD = 120
 TANK_WIDTH = 64
 TANK_HEIGHT = 64
 ROOM_COVER = 16
+FISHERMAN_COUNT = 0
+
+def load_sprite_sheets(dir, width, height):
+    path = join("Art", dir)
+    images = [f for f in listdir(path) if isfile(join(path, f))]
+
+    all_sprites = {}
+
+    for  image in images:
+        sprite_sheet = pygame.image.load(join(path, image))
+
+        sprites = []
+        for i in range(sprite_sheet.get_width() // width):
+            surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+            rect = pygame.Rect(i * width, 0 , width, height)
+            surface.blit(sprite_sheet, (0, 0), rect)
+            sprites.append(surface)
+        
+        all_sprites[image] = sprites
+    
+    return all_sprites
 
 class TankIdle(pygame.sprite.Sprite):
+    SPRITES = load_sprite_sheets("fishermanSprites", 80, 120)
+    ANIMATION_DELAY = 10
+    
     def __init__(self, x, y, price, money_per_second, level, fisherman):
         self.rect = pygame.Rect(x - ROOM_COVER, y, 64, 64)
         self.color = (0, 0, 0)
@@ -17,7 +42,8 @@ class TankIdle(pygame.sprite.Sprite):
         self.is_bought = 0
         self.old_mps = 0
         self.last_flash_time = 0
-        self.fisherman = pygame.image.load(join("Art", "fishermans", fisherman))
+        self.fisherman = fisherman
+        self.animation_count = 0
 
         if (level == 1):
             self.image = pygame.image.load(join("Art", "tanks", "idle_tank_lv1.png"))
@@ -29,15 +55,33 @@ class TankIdle(pygame.sprite.Sprite):
         self.key_cooldown = 0.5
         self.last_keypress_time = 0
 
+    def update_spritesheet(self):
+        if (self.fisherman == 1):
+            sprite_sheet_name = "idle_fisherman1.png"
+        elif (self.fisherman == 2):
+            sprite_sheet_name = "idle_fisherman2.png"
+        else:
+            sprite_sheet_name = "idle_fisherman3.png"
+        
+        # if (self.x_vel != 0 or self.y_vel != 0):
+        #     sprite_sheet = "run"
+
+        sprites = self.SPRITES[sprite_sheet_name]
+        sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
+
+        self.sprite = sprites[sprite_index]
+        self.animation_count += 1
+
     def draw(self, screen):
         #pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.image, self.rect)
         if (self.is_bought):
             (x, y) = self.rect.topleft
-            screen.blit(self.fisherman, (x - 80, y - 25))
+            screen.blit(self.sprite, (x - 80, y - 25))
 
     def loop(self, screen, player, money, font):
         self.draw(screen)
+        self.update_spritesheet()
         if player.is_nearby(self, DISTANCE_THRESHOLD):
 
             color = (0, 255, 0)
