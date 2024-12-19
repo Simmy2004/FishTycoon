@@ -9,6 +9,7 @@ from tank_fishing import TankFishing
 from rod_upgrade import RodUpgrade
 from math import sqrt
 from PIL import Image
+import time
 
 from pygame.sprite import Group
 
@@ -176,7 +177,7 @@ def handle_keyboard_input(player):
 
     if keys[pygame.K_DOWN]:
         player.y_vel = VELOCITY
-        if player.y_pos >= HEIGHT - 128 - 16:
+        if player.y_pos >= HEIGHT - 128 - 16 - 53:
             player.y_vel = 0
 
     if keys[pygame.K_RIGHT]:
@@ -303,6 +304,11 @@ def fade_screen_between_levels(screen, duration = 3000):
 def main():
     running = True
     screen = pygame.display.set_mode((1280, 720))
+    
+    ost = pygame.mixer.music.load(join("sfx", "ost.mp3"))
+    pygame.mixer.music.play(loops = -1)
+    pygame.mixer.music.set_volume(0.02)
+    
     tiles, image = get_background("floor_tile_256x256.png")
     # starting positions and the file
     player = Player(300, 300, join("mainIcon", "secondTry.png"))
@@ -313,7 +319,6 @@ def main():
     room_cover = pygame.image.load(join("Art", "Tiles", "BlueWall", "roomCover.png"))
     
     manual_fishing_tank, collisionables, walkables = render_collisionables(player, "BlueWall")
-
 
     while running:
         clock.tick(MAX_FPS)
@@ -361,13 +366,26 @@ def main():
                 door.price += 170000
                 door.image = pygame.image.load(join("Art", "Tiles", "doorLevel3.png"))
                 tiles, image = get_background("floor_tile_256x256_level3.png")
+                
+            if door.level == 4:
+                break
             
             manual_fishing_tank, collisionables, walkables = render_collisionables(player, wall_color)
-           
-
-            
        
         pygame.display.update()
+        
+    pygame.mixer.music.stop()
+        
+    win_screen = pygame.image.load(join("Art", "win_screen.png"))
+    screen.blit(win_screen, (0, 0))
+    pygame.display.update()
+    
+    win_sound = pygame.mixer.Sound(join("sfx", "win.mp3"))
+    win_sound.set_volume(0.05)
+    win_sound.play()
+    
+    time.sleep(win_sound.get_length())
+        
     pygame.mixer.quit()
     pygame.quit()
 
