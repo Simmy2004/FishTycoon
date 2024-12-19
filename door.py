@@ -50,10 +50,19 @@ class Door:
 
 
     def draw_buy_prompt(self, screen, font, color):
-      
         prompt_text_1 = f"This Door lets you travel to the next location"
-        prompt_text_2 = f"Next location is: Torino - Price {self.price}$"
-        prompt_text_3 = f"(Press E to travel to Torino)"
+        if self.level == 1:
+            prompt_text_2 = f"Next location is: Port of Constanta - Price {self.price}$"
+            prompt_text_3 = f"(Press E to travel to Port of Constanta)"
+
+        elif self.level == 2:
+            prompt_text_2 = f"Next location is: Torino - Price {self.price}$"
+            prompt_text_3 = f"(Press E to travel to Torino)"
+        else:
+            prompt_text_2 = f"Next location has the Golden Fish - Price {self.price}$"
+            prompt_text_3 = f"(Press E to travel to catch The Golden Fish)"
+
+        
 
 
         text_color = (255, 255, 255)
