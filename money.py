@@ -3,7 +3,7 @@ import pygame
 class Money(pygame.sprite.Sprite):
     def __init__(self):
         self.money_per_second = 0
-        self.balance = 100000000000
+        self.balance = 0
         self.counter = 0
 
     def increase_money_per_second(self, to_add):

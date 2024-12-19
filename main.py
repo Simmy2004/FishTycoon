@@ -23,6 +23,7 @@ WIDTH = 1280
 HEIGHT = 720
 MAX_FPS = 60
 clock = pygame.time.Clock()
+did_win = 0
 
 BASE_FISHING_RATE = [1, 100, 500]
 
@@ -368,6 +369,7 @@ def main():
                 tiles, image = get_background("floor_tile_256x256_level3.png")
                 
             if door.level == 4:
+                did_win = 1
                 break
             
             manual_fishing_tank, collisionables, walkables = render_collisionables(player, wall_color)
@@ -376,15 +378,17 @@ def main():
         
     pygame.mixer.music.stop()
         
-    win_screen = pygame.image.load(join("Art", "win_screen.png"))
-    screen.blit(win_screen, (0, 0))
-    pygame.display.update()
+    if did_win == 1:
+        
+        win_screen = pygame.image.load(join("Art", "win_screen.png"))
+        screen.blit(win_screen, (0, 0))
+        pygame.display.update()
     
-    win_sound = pygame.mixer.Sound(join("sfx", "win.mp3"))
-    win_sound.set_volume(0.05)
-    win_sound.play()
+        win_sound = pygame.mixer.Sound(join("sfx", "win.mp3"))
+        win_sound.set_volume(0.05)
+        win_sound.play()
     
-    time.sleep(win_sound.get_length())
+        time.sleep(win_sound.get_length())
         
     pygame.mixer.quit()
     pygame.quit()
