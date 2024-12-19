@@ -306,9 +306,11 @@ def main():
     running = True
     screen = pygame.display.set_mode((1280, 720))
     
+    pygame.display.set_caption("Fish Tycoon")
+    
     ost = pygame.mixer.music.load(join("sfx", "ost.mp3"))
     pygame.mixer.music.play(loops = -1)
-    pygame.mixer.music.set_volume(0.02)
+    pygame.mixer.music.set_volume(0.05)
     
     tiles, image = get_background("floor_tile_256x256.png")
     # starting positions and the file

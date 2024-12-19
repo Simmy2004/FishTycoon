@@ -34,6 +34,8 @@ class RodUpgrade(pygame.sprite.Sprite):
         if player.is_nearby(self, DISTANCE_THRESHOLD):
             color = (0, 255, 0)
 
+            self.price = BASE_UPGRADE_COST[player.level][self.upgrade_level]
+            
             if self.upgrade_level == MAX_LEVEL:
                 self.draw_info(screen, font, (0, 0, 0))
                 return
@@ -48,8 +50,6 @@ class RodUpgrade(pygame.sprite.Sprite):
 
             if keys[pygame.K_e] and current_time - self.last_keypress_time > self.key_cooldown:
                 self.last_keypress_time = current_time
-
-                self.price = BASE_UPGRADE_COST[player.level][self.upgrade_level]
                 
                 if money.balance >= self.price:
                     money.balance -= self.price
@@ -166,5 +166,4 @@ class RodUpgrade(pygame.sprite.Sprite):
         text_rect = text_surface.get_rect(center=info_box_rect.center)
         screen.blit(text_surface, text_rect)
 
-        # print(f"Info Box position: {info_box_rect.x}, {info_box_rect.y}, Box size: {info_box_rect.width}x{info_box_rect.height}")
 
