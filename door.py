@@ -22,7 +22,6 @@ class Door:
     def loop(self, screen, player, money, font):
         self.draw(screen)
 
-        # Gets the player center and calculates the distance between the player and the door.
         player_center = pygame.Rect(player.x_pos, player.y_pos, player.image.get_width(), player.image.get_height()).center
         collidable_center = self.rect.center
         distance = sqrt((player_center[0] - collidable_center[0]) ** 2 + (player_center[1] - collidable_center[1]) ** 2)
@@ -40,14 +39,11 @@ class Door:
             if keys[pygame.K_e] and self.final_door and money.balance >= self.price:
                 player.level = player.level + 1
                 money.balance = money.balance - self.price
-                # print(player.level)
+
             elif keys[pygame.K_e] and money.balance >= self.price:
                 self.fade = True
                 player.level = player.level + 1
                 money.balance = money.balance - self.price
-                # print(player.level)
-          
-
 
     def draw_buy_prompt(self, screen, font, color):
         prompt_text_1 = f"This Door lets you travel to the next location"
@@ -61,8 +57,6 @@ class Door:
         else:
             prompt_text_2 = f"Next location has the Golden Fish - Price {self.price}$"
             prompt_text_3 = f"(Press E to travel to catch The Golden Fish)"
-
-        
 
 
         text_color = (255, 255, 255)
@@ -105,4 +99,3 @@ class Door:
         screen.blit(text_surface_1, text_rect_1)
         screen.blit(text_surface_2, text_rect_2)
         screen.blit(text_surface_3, text_rect_3)
-

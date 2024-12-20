@@ -88,10 +88,6 @@ class TankIdle(pygame.sprite.Sprite):
 
             if money.balance < self.price:
                 color = (255, 0, 0)                
-
-            # if hasattr(self, "flash_text") and self.flash_text:
-            #     color = self.flash_text_color
-            # (for flashing the color of the box)
             
             self.draw_buy_prompt(screen, font, color)
 

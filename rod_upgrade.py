@@ -26,7 +26,6 @@ class RodUpgrade(pygame.sprite.Sprite):
         self.image = pygame.image.load(join("Art", "upgrade_table_2.png"))
 
     def draw(self, screen):
-        #pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.image, self.rect)
 
     def loop(self, screen, player, money, font):
@@ -54,7 +53,6 @@ class RodUpgrade(pygame.sprite.Sprite):
                 
                 if money.balance >= self.price:
                     money.balance -= self.price
-                    # print(self.upgrade_level)
                     purchase_sound = pygame.mixer.Sound(join("sfx", "confirmed_purchase.mp3"))
                     purchase_sound.set_volume(0.2)
                     purchase_sound.play()
@@ -68,8 +66,6 @@ class RodUpgrade(pygame.sprite.Sprite):
                     self.flash_text = True
                     self.flash_text_start_time = current_time
                     self.flash_text_color = (255, 0, 0)
-
-
        
     def check_collision(self, player):
         player_rect = pygame.Rect(player.x_pos, player.y_pos, player.image.get_width(), player.image.get_height())
@@ -166,5 +162,3 @@ class RodUpgrade(pygame.sprite.Sprite):
         pygame.draw.rect(screen, color, info_box_rect)
         text_rect = text_surface.get_rect(center=info_box_rect.center)
         screen.blit(text_surface, text_rect)
-
-
