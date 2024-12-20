@@ -310,7 +310,7 @@ def main():
     
     ost = pygame.mixer.music.load(join("sfx", "ost.mp3"))
     pygame.mixer.music.play(loops = -1)
-    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.set_volume(0.08)
     
     tiles, image = get_background("floor_tile_256x256.png")
     # starting positions and the file
@@ -351,7 +351,7 @@ def main():
 
         if (door.fade):
             fly_sound = pygame.mixer.Sound(join("sfx", "next_level_sound.mp3"))
-            fly_sound.set_volume(0.2)
+            fly_sound.set_volume(0.45)
             fly_sound.play()
 
             fade_screen_between_levels(screen)
